@@ -1,0 +1,131 @@
+
+<!-- 
+    how to use tailwind css 
+    1. first create a folder in your pc which is the main folder of your project
+    2.open it in vscode and run "npm init -y" to initialize this project and it creates a package.json file 
+    3. the next step is to install tailwindcss in our project , using 'npm install -D tailwindcss ' , once installed it will be visible in package.json like which version and stuff is getting used in the project  , this below code gets added to package.json and package-lock.json file is added to the project
+    "
+        "devDependencies": {
+        "tailwindcss": "^3.4.3"
+        }
+    "
+
+    4. next step is to create tailwind.config.json file which will contain all the basic configuration for the tailwind , to create it run the command "npx tailwindcss init "
+    5. now that you have created the tailwind.config.json file you need to define in it which file will be using tailwind and we need to give their path in it. content: ["./public/**/*.{html,js}"] , we modified the content in it specifying the path of html,js file
+
+    note:- input.css is the file that we create which will contain tailwind styles and custom css , now what tailwind does is convert this file using a script into vanilla css and store it in output.css ,everytime there is some change in input file we need to rerun that script again so that the new output is created and can be used in index.html file
+
+    6. now that we understand the input and ouput file concept , we create a input.css file in src folder which will be used to create output file , what goes in it , is explained there
+    7. now we need to run the command to create a output file and put the created vanilla css in it for that use        "npx tailwindcss -i ./src/input.css -o ./public/output.css --watch"       ,here -i stands for the path to input file and -o stands for path to output file if it exists and if not create one , --watch is used because we will need to run the above command each time we add a new class to a element in html or make any changes in input.css , to avoid doing it again and again we added a watch flag to look out for and changes
+    8 now you will have the run command of point 7 each time u open this project and if you dont want to write this big a line , you can add a script to package.json , to run this commad with a smaller command like "npm run build(build is the name you gave to ur script)"
+
+        #this is what i changed in point 8
+         "scripts": {
+              "build": "npx tailwindcss -i ./src/input.css -o ./public/output.css --watch"
+  }
+ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>split-bills</title>
+    <link rel="stylesheet" href="output.css">
+</head>
+<body style="min-width: 400px;" class=" p-0 bg-amber-50">
+    <header class="bg-sky-700 h-14 flex justify-center items-center"> <!--here we are using tailwind classes to change css , bg-sky-900 sets the background color of the header here , h-16 sets 4*16px height of the header , flex is used to make the header cotainer flexible , justify-centre is applied to flex to align child elements of header centrallly to the main axis here it is x-axis, and items-centre class put the child element cross axis centrally , remember align-centre will only align the  child elements to the centre if the parent is inline or inline block , and remember the childs should also be block or flex to appply intems-centre -->
+        <span class="text-yellow-50 text-3xl  font-semibold">Split In Friends</span><!--here text-white changes the text-color to white ,it can be other colors also , text-3xl is here used to set the font size of the text , there can be other values for it also like 4xl upto 9xl or sm for small or text-base for normal size , lg for large etc-->
+    </header>   
+    <main class="my-10 bg-amber-50">
+
+<!-- 1 -->
+        <div id="how-many-friends" class="px-4 flex items-center">
+            <p class="text-xl flex items-center">
+                <span class="font-extrabold text-4xl pr-1">&middot;</span>
+            How many friends are there ? </p>
+            <input id="friends-number-input-field"  onkeyup="if(event.key==='Enter') noOfpeople();"class="ml-3 border-2 rounded
+                -lg  w-14 border-slate-300 h-8" type="number" max="20"></input> 
+        </div>
+
+<!-- 2 -->
+        <div id="take-names-entry-div" class="hidden">
+            <div class="px-4 flex items-center" >
+
+                <p class="text-lg flex items-center">
+                    <span class="font-extrabold text-4xl pr-1">&middot;</span>
+                Enter the name of friend 
+                    <span id="friendnumber" class="text-teal-500">1</span> 
+                </p>
+    
+                <input id="friends-inputed-name" onkeyup="if(event.key==='Enter') addnametolist();" class="ml-3 border-2 rounded
+                    -lg  w-32 border-slate-300 h-8 pl-1" type="text" maxlength="20" placeholder="Name">
+                </input> 
+    
+            </div>
+            <div class="flex justify-around mt-2" >
+                <button onclick="addnametolist();" class="w-auto min-w-32  border-2 font-bold bg-green-600 text-red-100 rounded-xl h-8">Ok</button>
+                <button onclick="resetallwhenaddnames();" class="w-auto min-w-32 border-2 font-bold bg-red-700 text-red-100 rounded-xl h-8">Reset All</button>
+            </div>
+           
+        </div>
+
+
+<!-- 3 -->
+        <div id="added-names" class=" mx-5">
+            
+         
+            
+        </div>
+
+<!-- 4 div to reset all the score after all the entries have been made -->
+
+        <div id="reset-all-after-all-name-added" class="hidden">
+
+            <div class="flex flex-col" >
+                <div class=" flex justify-evenly">
+                    <button onclick="finalcalculation();" class="w-auto min-w-32 border-2 font-bold bg-teal-600 text-red-100 rounded-xl h-8">calculate</button>
+                    <button onclick="resetall();" class="w-auto min-w-32 border-2 font-bold bg-red-700 text-red-100 rounded-xl h-8">Reset All</button>
+                </div>
+                <div class="flex justify-center my-4 mx-5">
+                    <label class="font-semibold text-lg" for="names">who paid ?</label>
+                    <select class="ml-4 border-2 rounded-lg border-lime-700" name="names" id="drop-down-for-payee">
+                        <!-- render the drop down options here  -->
+                    </select>
+                </div>
+                <div class="flex justify-center mb-3 mx-5">
+                    <label class="font-semibold text-lg" for="amountpaid">How much paid ?</label>
+                    <input id="amountpaid" class="border-2 ml-2 w-20 rounded-lg  border-lime-700 pl-1" type="number" name="amountpaid" maxlength="9" placeholder="Amount">
+                </div>
+                <div id="parent-checkbox-div" class=" mx-5">
+                    <div id="selectalldiv" class="flex items-center my-2">
+                        <label class="text-lg" for="selectall">select all</label>
+                        <input id="selectallcheckbox" class="h-5 w-5 ml-3 " type="checkbox">
+                    </div>
+                    
+                    
+                    
+                    <!-- render all check boxes here  -->
+                </div>
+
+                <div class="m-5 flex justify-center">
+                    <button onclick="makeentry();" class="w-auto min-w-32 border-2 font-bold bg-green-600 text-red-100 rounded-xl h-8">Make Entry</button>
+                </div>
+                
+                <div class="mx-5" id="final-calculated-result">
+                    
+                    <!-- here goes the final result after the calculate button is pressed -->
+                </div>
+
+            </div>
+            
+            
+        </div>
+            
+        
+        
+    </main> 
+
+    <script src="script.js"></script>
+</body>
+</html> 

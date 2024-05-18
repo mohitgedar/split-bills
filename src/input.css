@@ -1,0 +1,5 @@
+/* this three lines below are doing nothing but adding base ,components and utilities classes to the output file so that they can be used  */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
