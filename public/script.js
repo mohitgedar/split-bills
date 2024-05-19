@@ -187,33 +187,41 @@ function rendertopage(name){
 function renderpage(){
     let a=localStorage.getItem('nooffriends');
     let b= localStorage.getItem('namesadded');
+    //if both nooffriends and namesadded or either is null means they don't exit means the user hasn't interacted at all so we need not to do anything at all
     if((a===null) || (b===null))
             {
-               
-                return;
+               return;
             }
+    // if nooffriends is not null means we are entring the names ,and if namesadded is < total friends , we need to add rest of the names , this if is for that 
     else if(a!==null && b<a)
         {
             
-            document.getElementById('how-many-friends').style.display='none';
-            document.getElementById('take-names-entry-div').style.display='block';
+            document.getElementById('how-many-friends').style.display='none'; //since at this moment we are entring the names we don't need the how-many-friends form 
+            document.getElementById('take-names-entry-div').style.display='block'; //but we need the name entring form
+            // this below is to render the pages that have been already added 
             let totaladdednames= parseInt(localStorage.getItem('namesadded'));
             for(let i=0;i<totaladdednames;i++){
                 rendertopage(localStorage.getItem(i));
             }
-            localStorage.setItem('namesadded',totaladdednames);
-            document.getElementById('friendnumber').innerText=totaladdednames+1;
+            localStorage.setItem('namesadded',totaladdednames);//this line might be unnecessary as i didnot check if the refreshing of page causes the namesadded to be unset , so we set it equal to the names that have already been entered
+            document.getElementById('friendnumber').innerText=totaladdednames+1;//span which shows which friend number is to be added next is updated here
         } 
 
+    //this the case where all the names have already been added
     else if(a===b)
     {
-        
+        //first we want both friendsize form and name entry form to hide
         document.getElementById('how-many-friends').style.display='none';
         document.getElementById('take-names-entry-div').style.display='none';
+
+        //this removes the names that we rendered to the page , so that the next time we add new names the previous ones are still not there
         document.querySelectorAll('.name-para-divs').forEach(div=>{ div.remove();})
+        //this below is show the final page where we add new entries and calculate the final result 
         document.getElementById('reset-all-after-all-name-added').classList.remove('hidden');
+        //ofcourse we will need to render the dropdown , because it will be gone if we refresh the page otherwise 
         renderdropdown();
        
+        //used this if to make sure that once a calculation is done , it stay on the page even after refresh 
         if(localStorage.getItem('calculatedonce')==='true')
             finalcalculation();
 
@@ -228,26 +236,26 @@ function renderpage(){
 
 
 
-
+//this function is to render the dropdowm of who paid 
 function renderdropdown(){
-    let namesadded=parseInt(localStorage.getItem('namesadded'));
+    let namesadded=parseInt(localStorage.getItem('namesadded'));//need a size ,how many to be add in drop down , don't want to run short or go too much 
     for(let i=0;i<namesadded;i++)
         {
-            let newoption = document.createElement('option');
-            newoption.value=i;
-            newoption.innerText=localStorage.getItem(i);
-            document.getElementById('drop-down-for-payee').appendChild(newoption);
+            let newoption = document.createElement('option'); //created a option element to be put inside a select which is basically the drop down 
+            newoption.value=i; //set the value of newoption to i so that it will be easier to retrive the value of who paid
+            newoption.innerText=localStorage.getItem(i); //this is what i am talking above ,we used i directly to retrive the name and use it in dropdown
+            document.getElementById('drop-down-for-payee').appendChild(newoption); //added the child to dropdown options
         }
 
-    // we are going to use this same function to render the checkboxes , so that i don't have to update too much code , where this new rendering gets called
+    // we are going to use this same function to render the checkboxes or names to know among who is the amount was shared , so that i don't have to update too much code , where this new rendering gets called
     for(let i=0;i<namesadded;i++)
         {
-            let name=localStorage.getItem(i);
-            let newdiv = document.createElement('div');
-            newdiv.classList.add('flex','items-centre','my-2')
+            let name=localStorage.getItem(i); //get all the names one by one
+            let newdiv = document.createElement('div');//create new element to each name
+            newdiv.classList.add('flex','items-centre','my-2')//adding classes to the newdiv to apply css to them
             newdiv.innerHTML=`<label class='text-lg' for="${i}">${name}</label>
-            <input id="name${i}" class="h-5 w-5 ml-3 " type="checkbox">`;
-            document.getElementById('parent-checkbox-div').appendChild(newdiv);
+            <input id="name${i}" class="h-5 w-5 ml-3 " type="checkbox">`;//adding lable and checkbox to the new div or say adding the html 
+            document.getElementById('parent-checkbox-div').appendChild(newdiv);//added the new name to the page
         }
 }
 
@@ -255,18 +263,21 @@ function renderdropdown(){
 
 
 
-
+// this function basically gets called when the selectall checkbox is changed
 function selectall(){
     
+    //getting the refernce the selectall checkbox to check if its checked or not
     let selectall=document.getElementById('selectallcheckbox');
+    //getting the size of namesadded to know how many checkboxes need to be checked if selectall is  selected
     let temp=parseInt(localStorage.getItem('namesadded'));
     
+    //if the selectall checkbox is selected all other checkboxes are all selected using a for loop other wise all other are unselected
     if(selectall.checked===true){
       
         for(let i=0;i<temp;i++)
             {
-                let name="name"+i;
-                document.getElementById(name).checked=true;
+                let name="name"+i;//this is because each checkbox was given a dynamic id to get a refernce and it was (name + key of the name in local storage) 
+                document.getElementById(name).checked=true; //checking the checkbox with id namei eg. mohit0
                 
             }
     }
@@ -285,52 +296,61 @@ function selectall(){
 
 
 
-
+//this function is called when make entry button is clicked , what this function do is that it add the entry of expense to the local storage
 function makeentry(){
-    let amount=parseInt(document.getElementById('amountpaid').value);
+    //all the data that we get in one entry is stored at one index of payments array as a object , so it will be easier for us to go through each entry
+    let amount=parseInt(document.getElementById('amountpaid').value); //retriving the value of amount paid
     
+    //we don't want to run the code any further unnecessarily if the amount is not added
     if(amount==='')
         {
             alert("Amount section can't be empty");
             return;
         }
 
-    const whopaid=document.getElementById('drop-down-for-payee').value;//this will me the person no. who paid
+    const whopaid=document.getElementById('drop-down-for-payee').value;//this will retrive the person no. who paid
     
+    //we created a array to store who is the amount shared among
     let sharedamong=[];
+    //if selectall checkbox is ticked means it is shared amoung all so we store all friend number in sharedamoung array
     if(document.getElementById('selectallcheckbox').checked)
         {
-            let temp=parseInt(localStorage.getItem('namesadded'));
+            let temp=parseInt(localStorage.getItem('namesadded'));//gives total no. of friends there are
             for(let i=0;i<temp;i++)
                 sharedamong.push(i);
         }
     else
-        {
+        {   //if selectall is not checked we want to check each checkbox for being checked ,if it is we store the no. to sharedamong
             let temp=parseInt(localStorage.getItem('namesadded'));
             for(let i=0;i<temp;i++)
                 {
-                    if(document.getElementById(`name${i}`).checked)
+                    if(document.getElementById(`name${i}`).checked)//names${i} gives us the id of each checkbox one by one
                         sharedamong.push(i);
                 }
-        }  
+        } 
+    //this if is to make sure the condition when no checkbox is ticked , then the payee is one who shared it to himself ,so we push his no. in the shared among     
     if(sharedamong[0]===undefined)
         {
             sharedamong.push(whopaid);
         }
-    let entrynumber=parseInt(localStorage.getItem('entriesmade'))+1;
-    let payments=JSON.parse(localStorage.getItem('payments'));
-    let thisentry='entry'+entrynumber;
-    thisentry={
+    let entrynumber=parseInt(localStorage.getItem('entriesmade'))+1;//here at the start entriesmade is zero so we add one to it and use that as the entry no for this transaction and then later update entriesmade to entrynumber so we keep increasing the entry no each time
+    let payments=JSON.parse(localStorage.getItem('payments'));//payments is a array but stored as json string so we convert it back 
+// let thisentry='entry'+entrynumber;//each entry that we want to store in the payments array we want to store it as a object so we need a key , this is the making of the key entry1 , entry2 etc.
+
+    //here we created the object for present entry where we store the amount , whopaid , whosharedit , and also entryno. so that we can go through each one by one
+    let thisentry={
         'amount':amount,
         'whopaid':whopaid,
         'sharedamong':sharedamong,
         'entrynumber':entrynumber
     };
   
-    payments.push(thisentry);
-    localStorage.setItem('payments',JSON.stringify(payments));
-    localStorage.setItem('entriesmade',entrynumber);
+    payments.push(thisentry);//we used push function of the array so we don't have to keep track where the entry is going in payments array , it will automatically be added in the last
+    localStorage.setItem('payments',JSON.stringify(payments));//stored the array back to the local storage
+    localStorage.setItem('entriesmade',entrynumber);//this is where we update the total no. of entries made till now
 
+
+    //this all code below is to clear the field to make new entries ,so user don't have to clear them manually
     document.getElementById('amountpaid').value='';
     let temp=parseInt(localStorage.getItem('namesadded'));
     document.getElementById('selectallcheckbox').checked=false;
@@ -339,6 +359,16 @@ function makeentry(){
             document.getElementById(`name${i}`).checked=false;
                 
         }
+
+    //this below section is to show a popup notification entry has been made by making a element unhide and then hide again after  1sec
+    {
+        let newdiv = document.getElementById('popup-entry-made');
+        newdiv.classList.remove('hidden');
+        setTimeout(() => {
+            newdiv.classList.add('hidden');
+        }, 1000);
+
+    }
 }
 
 
@@ -347,22 +377,25 @@ function makeentry(){
 
 
 
-
+//this is the final function which calculates the amount each need to pay or get and show it on the page 
 function finalcalculation(){
-    localStorage.setItem('calculatedonce',true);
-    document.getElementById('final-calculated-result').innerHTML="";
+    localStorage.setItem('calculatedonce',true);//this is to mark that the calculation has been done once , so while rendering the page on refresh we can decide if the previous results should be rendered or not
+    document.getElementById('final-calculated-result').innerHTML="";//first we remove the previously added result 
 
-    let payments=JSON.parse(localStorage.getItem('payments'));
+    let payments=JSON.parse(localStorage.getItem('payments'));//we retrive the array which have all the entries and parse it from json string to back normality
     
-    let totalentries=parseInt(localStorage.getItem('entriesmade'));
-    // in case some user clicks the calculate button without making entries
+    let totalentries=parseInt(localStorage.getItem('entriesmade')); //this will be useful as we will want to traverse through all the entries we have made so far
+
+    // in case some user clicks the calculate button without making entries , we need to return and do nothing
     if(payments[0]===undefined)
         {   
             alert('you need to make entries first !!');
             return;
         }   
-
+    
+    //this is the array which will have entries of objects for each person , and that object will contain how much he paid in total, how much expense he made, and what is his share in total expense
     let arr=[];
+    //storing the required object at each index where index no. is equal to the person no.
     for(let i=0;i<localStorage.getItem('namesadded');i++)
         {
             arr[i]={sumpaid:0,
@@ -372,40 +405,48 @@ function finalcalculation(){
         }
    
    
+    //we go through all the entries of payments one by one retrive who paid and how much , and add that amount to that person object in arr array
     for(let i=0;i<totalentries;i++)
         {
             arr[parseInt(payments[i].whopaid)].sumpaid+=payments[i].amount;
+            //parseInt(payments[i].whopaid) will give us the no. who paid and we will use it as index in arr and update sumpaid by adding the amount of entry to the who paid person in arr
+            // we will do this for all entries so by the end of this loop we know who paid how much
         }
 
-    for(let i=0;i<totalentries;i++)
+    //this loop is a little complicated, we get the amount paid divide it with the no. of people who shared and we have the expense of each person , now we add that amount to the expense of each person who shared the expenses
+    for(let i=0;i<totalentries;i++)//we want to go through all the entries
     {
-        let sharingsize=payments[i].sharedamong.length;
-        let eachoneexpense=payments[i].amount/sharingsize;
-        for(let j=0;j<sharingsize;j++){
-            arr[payments[i].sharedamong[j]].expensemade += eachoneexpense;
+        let sharingsize=payments[i].sharedamong.length;//this gives us the no.of people who shared the expense
+        let eachoneexpense=payments[i].amount/sharingsize; //this calculates the expense of one person of particular entry at a time
+
+        for(let j=0;j<sharingsize;j++)//we want to add one-person expense to each person who shared the expense ,so we run the loop as long as the no of expense sharing people are there
+        {
+            arr[payments[i].sharedamong[j]].expensemade += eachoneexpense;//we update the expense of each person 
+            //payments[i].sharedamong[j] will give us the person no. of all people who shared expense one by one , we then use that no. as index and update expensemade in arr or each person 
         }
     }
-    console.log(payments);
+    console.log('these below are payments and arr array for developers understanding of the code');
+    console.log(payments);//this basically loads the payments array and arr array to the console for you to understand the structure , how things are working
     console.log(arr);
     
-    for(let i=0;i<arr.length;i++)
+    for(let i=0;i<arr.length;i++)//this loop is working on the arr array completely as at this it have all the calculated needed
         {
-            arr[i].finalpay= Math.round( arr[i].sumpaid - arr[i].expensemade);
-            let newdiv =document.createElement('div');
-            if(arr[i].finalpay<0)
+            arr[i].finalpay= Math.round(( arr[i].sumpaid - arr[i].expensemade)*100)/100;//this basically subtracts the expense made by a person from amount he paid to know if he need to pay or get payed from others
+            let newdiv =document.createElement('div');//making a new div element for each person to write his final calculation
+            if(arr[i].finalpay<0) //if the final calculation of the person is negative means he needs to pay 
             {
-                newdiv.innerHTML=`<p class="my-2" >${localStorage.getItem(i)} needs to pay ${-1*(arr[i].finalpay)}</p>`;
+                newdiv.innerHTML=`<p class="my-2" >${localStorage.getItem(i)} needs to pay ${-1*(arr[i].finalpay)}</p>`;//here multiplied by -1 because i don't want the result to look like "x need to pay -50" it don't go with the statement
             }    
-            else if(arr[i].finalpay>0)
+            else if(arr[i].finalpay>0)//if the final calculation of the person is positive means he needs to be paid
             {
                 newdiv.innerHTML=`<p class="my-2">${localStorage.getItem(i)} needs to be payed ${arr[i].finalpay}</p>`;
             }
-            else
+            else //is someone don't need to pay or needs to be paid , means his balance is clear 
             {
                 newdiv.innerHTML=`<p class="my-2">${localStorage.getItem(i)}'s balance is clear </p>`;
             }
 
-            document.getElementById('final-calculated-result').appendChild(newdiv);
+            document.getElementById('final-calculated-result').appendChild(newdiv);//finally adding the result of person on the page
         }
 
         

@@ -39,7 +39,7 @@
     </header>   
     <main class="my-10 bg-amber-50">
 
-<!-- 1 -->
+<!-- 1 form to take entry of how many friends there are -->
         <div id="how-many-friends" class="px-4 flex items-center">
             <p class="text-xl flex items-center">
                 <span class="font-extrabold text-4xl pr-1">&middot;</span>
@@ -48,8 +48,10 @@
                 -lg  w-14 border-slate-300 h-8" type="number" max="20"></input> 
         </div>
 
-<!-- 2 -->
+
+<!-- 2 this is the second form where we try to add names -->
         <div id="take-names-entry-div" class="hidden">
+
             <div class="px-4 flex items-center" >
 
                 <p class="text-lg flex items-center">
@@ -61,8 +63,9 @@
                 <input id="friends-inputed-name" onkeyup="if(event.key==='Enter') addnametolist();" class="ml-3 border-2 rounded
                     -lg  w-32 border-slate-300 h-8 pl-1" type="text" maxlength="20" placeholder="Name">
                 </input> 
-    
             </div>
+
+
             <div class="flex justify-around mt-2" >
                 <button onclick="addnametolist();" class="w-auto min-w-32  border-2 font-bold bg-green-600 text-red-100 rounded-xl h-8">Ok</button>
                 <button onclick="resetallwhenaddnames();" class="w-auto min-w-32 border-2 font-bold bg-red-700 text-red-100 rounded-xl h-8">Reset All</button>
@@ -71,14 +74,14 @@
         </div>
 
 
-<!-- 3 -->
+<!-- 3 div to render the added names on the page -->
         <div id="added-names" class=" mx-5">
             
          
             
         </div>
 
-<!-- 4 div to reset all the score after all the entries have been made -->
+<!-- 4 div to take entries of the payments and calculate final , or reset everthing-->
 
         <div id="reset-all-after-all-name-added" class="hidden">
 
@@ -120,6 +123,10 @@
             </div>
             
             
+        </div>
+<!-- 5 pop that entry has been made -->
+        <div id="popup-entry-made" class=" hidden shadow-md shadow-yellow-900 text-lime-800 fixed bottom-18 left-1/4 right-1/4 text-xl font-semibold text-center  bg-zinc-200 px-8 py-8 rounded-lg md:left-1/3 md:right-1/3 ">
+            Entry Made! 
         </div>
             
         
