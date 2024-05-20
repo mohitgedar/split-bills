@@ -6,6 +6,7 @@ document.getElementById('selectallcheckbox').addEventListener('change',selectall
 
 
 
+
 //if a key-value pair is not in local storage and you try to retrive is ,we get null , this below 'if' provided here so that we don't need to check if payment array is there in storage each time we add a entry using function makeentry() so we check it at very start each time page loads or refresh
 if(localStorage.getItem('payments')===null)
     {
@@ -42,6 +43,9 @@ function resetallwhenaddnames(){
     }
     
     document.getElementById('added-names').innerHTML=''; //clears already added names
+    document.getElementById('added-names').classList.add('hidden');// the div in which names are shown needs to be hidden because now the background and div have different colors
+    document.getElementById('friends-number-input-field').value=''; //so we can add no. of friends again without needing to clear previous entry
+    document.getElementById('friendnumber').innerText='1';//to reset the span number or friend no.
     document.getElementById('friends-inputed-name').value=''; //clear name entring field
     document.getElementById('take-names-entry-div').style.display='none'; //hide the name entring form
     document.getElementById('how-many-friends').style.display='flex'; //this shows the form of entring friends number
@@ -62,6 +66,7 @@ function resetall(){
         localStorage.setItem('payments',JSON.stringify(payments));
         localStorage.setItem('entriesmade','0');
     }
+    //note:- this above section will get executed even if somehow you return from this function based on a condition ,intending that rest of code don't execute , because no matter what , code inside curly braces without condition always gets executed in js so we put this in a else condition
 
     document.getElementById('how-many-friends').style.display='flex'; //after reset we go to first page of taking no of friends input so we make it visible 
     
@@ -96,6 +101,12 @@ function noOfpeople(){
         document.getElementById('friends-number-input-field').value='';
         return;
     }
+    if(nooffriends<2)
+        {
+            alert('There should be atleast two people');
+            document.getElementById('friends-number-input-field').value='';
+            return;
+        }
     localStorage.setItem('nooffriends',nooffriends); //i stored the value in local storage so that i dont have to make the nooffriends variable global
     document.getElementById('how-many-friends').style.display='none'; // now that we have no. of friends we need to hide the option to enter the no. of friends other wise users will mendle with it anytime , creating errors in the code
     document.getElementById('take-names-entry-div').style.display='block'; //now that we have how many friends there are going to be we want to display a div in which we take entries of the names and meanwhile hide the question ,how many friends are there.
@@ -120,6 +131,12 @@ function addnametolist(){
         }
     else if(b>totaladdednames)//this code runs if the names entered are still less than the total allowed
     {   
+        //added-names div is visible even without anyelements ,so i had to hide it , this below if is for that , to make sure that when we add names , if addednames is hidden unhide is , this is basically intended when first name get inputed but , if i had gone with some other method to run this only for first name , it could have gotten comlicated
+        //although now that i think about it could have checked namesadded ,if it was zero i unhide the  div otherwise it's already unhidden
+        if(document.getElementById("added-names").classList.contains('hidden'))
+            {
+                document.getElementById("added-names").classList.remove('hidden');
+            }
         localStorage.setItem(totaladdednames,name);//this stores the newly added name to the localstorage with key as a number 
         
 
@@ -141,6 +158,7 @@ function addnametolist(){
             setTimeout(() => {
                 
                 document.querySelectorAll('.name-para-divs').forEach(div=>{ div.remove();});
+                document.getElementById("added-names").classList.add('hidden'); //we want the names div to be hidden once all names have been added
                 document.getElementById('reset-all-after-all-name-added').classList.remove('hidden');//this will show the final page where we enter the payment entries by removing it's hidden class 
                 
                 renderdropdown();//this is to render the dropdown options based on the names that we entered 
@@ -169,7 +187,7 @@ function rendertopage(name){
 
         //this is essential the inner html of this new div, we used here backtick string , so that we can add variable values on the go in one line 
         newdiv.innerHTML=`
-        <p class=" text-lg my-1
+        <p class="first-letter:uppercase text-lg my-1
         mx-5">${name}</p>
         `;
 
@@ -192,7 +210,7 @@ function renderpage(){
             {
                return;
             }
-    // if nooffriends is not null means we are entring the names ,and if namesadded is < total friends , we need to add rest of the names , this if is for that 
+    // if nooffriends is not null means we are entring the names ,and if namesadded is < total friends , we need to add rest of the names , this is for that 
     else if(a!==null && b<a)
         {
             
@@ -243,7 +261,9 @@ function renderdropdown(){
         {
             let newoption = document.createElement('option'); //created a option element to be put inside a select which is basically the drop down 
             newoption.value=i; //set the value of newoption to i so that it will be easier to retrive the value of who paid
-            newoption.innerText=localStorage.getItem(i); //this is what i am talking above ,we used i directly to retrive the name and use it in dropdown
+            let temp=localStorage.getItem(i);//this is what i am talking above ,we used i directly to retrive the name and use it in dropdown
+            temp=temp.substring(0, 1).toUpperCase() + temp.substring(1);//to make the first letter of options in dropdown uppercased
+            newoption.innerText=temp; 
             document.getElementById('drop-down-for-payee').appendChild(newoption); //added the child to dropdown options
         }
 
@@ -252,8 +272,8 @@ function renderdropdown(){
         {
             let name=localStorage.getItem(i); //get all the names one by one
             let newdiv = document.createElement('div');//create new element to each name
-            newdiv.classList.add('flex','items-centre','my-2')//adding classes to the newdiv to apply css to them
-            newdiv.innerHTML=`<label class='text-lg' for="${i}">${name}</label>
+            newdiv.classList.add('flex','items-centre','my-2','pl-3')//adding classes to the newdiv to apply css to them
+            newdiv.innerHTML=`<label class='text-lg first-letter:uppercase' for="${i}">${name}</label>
             <input id="name${i}" class="h-5 w-5 ml-3 " type="checkbox">`;//adding lable and checkbox to the new div or say adding the html 
             document.getElementById('parent-checkbox-div').appendChild(newdiv);//added the new name to the page
         }
@@ -301,14 +321,22 @@ function makeentry(){
     //all the data that we get in one entry is stored at one index of payments array as a object , so it will be easier for us to go through each entry
     let amount=parseInt(document.getElementById('amountpaid').value); //retriving the value of amount paid
     
-    //we don't want to run the code any further unnecessarily if the amount is not added
-    if(amount==='')
+    //we don't want to run the code any further unnecessarily if the amount is not added , use isNaN here becuase it check both if it is empty or not a number, the amount==='' won't work well
+    if(isNaN(amount))
         {
             alert("Amount section can't be empty");
             return;
         }
-
-    const whopaid=document.getElementById('drop-down-for-payee').value;//this will retrive the person no. who paid
+    //added another condition to make sure user don't input -ve amount , well you basically can never pay in -ve so.
+    else if(amount<0)
+        {
+            alert("Amount can't be negative");
+            document.getElementById('amountpaid').value='';
+            return;
+        }
+    else
+    {
+        const whopaid=document.getElementById('drop-down-for-payee').value;//this will retrive the person no. who paid
     
     //we created a array to store who is the amount shared among
     let sharedamong=[];
@@ -361,14 +389,19 @@ function makeentry(){
         }
 
     //this below section is to show a popup notification entry has been made by making a element unhide and then hide again after  1sec
-    {
-        let newdiv = document.getElementById('popup-entry-made');
-        newdiv.classList.remove('hidden');
-        setTimeout(() => {
-            newdiv.classList.add('hidden');
+   
+    let newdiv = document.getElementById('popup-entry-made');
+    newdiv.classList.remove('hidden');
+    setTimeout(() => {
+        newdiv.classList.add('hidden');
         }, 1000);
-
     }
+
+    
+
+    
+
+    
 }
 
 
@@ -379,6 +412,7 @@ function makeentry(){
 
 //this is the final function which calculates the amount each need to pay or get and show it on the page 
 function finalcalculation(){
+   
     localStorage.setItem('calculatedonce',true);//this is to mark that the calculation has been done once , so while rendering the page on refresh we can decide if the previous results should be rendered or not
     document.getElementById('final-calculated-result').innerHTML="";//first we remove the previously added result 
 
@@ -435,11 +469,11 @@ function finalcalculation(){
             let newdiv =document.createElement('div');//making a new div element for each person to write his final calculation
             if(arr[i].finalpay<0) //if the final calculation of the person is negative means he needs to pay 
             {
-                newdiv.innerHTML=`<p class="my-2" >${localStorage.getItem(i)} needs to pay ${-1*(arr[i].finalpay)}</p>`;//here multiplied by -1 because i don't want the result to look like "x need to pay -50" it don't go with the statement
+                newdiv.innerHTML=`<p class="my-2 font-semibold text-red-800" ><span class="text-black first-letter:uppercase">${localStorage.getItem(i)}</span> needs to Pay ${-1*(arr[i].finalpay)}</p>`;//here multiplied by -1 because i don't want the result to look like "x need to pay -50" it don't go with the statement
             }    
             else if(arr[i].finalpay>0)//if the final calculation of the person is positive means he needs to be paid
             {
-                newdiv.innerHTML=`<p class="my-2">${localStorage.getItem(i)} needs to be payed ${arr[i].finalpay}</p>`;
+                newdiv.innerHTML=`<p class="my-2 font-semibold text-green-700"><span class="text-black first-letter:uppercase">${localStorage.getItem(i)}</span> needs to be Payed ${arr[i].finalpay}</p>`;
             }
             else //is someone don't need to pay or needs to be paid , means his balance is clear 
             {
@@ -450,7 +484,7 @@ function finalcalculation(){
         }
 
         
-
+        document.getElementById('final-calculated-result').classList.remove('hidden'); //the div was hidden because it was visible because of color difference and had to unhide it
      
 }
          

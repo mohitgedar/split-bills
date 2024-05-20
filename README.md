@@ -75,7 +75,7 @@
 
 ## Bugs you can work on 
 
-1. At the moment I don't know if there is any bug. let me know in the discussion of this repo
+1. At the second page , where we add names , if we refresh the page in middle after adding few name , the names that were being shown on the page don't show .most likely related to function renderpage and rendertopage in javascript.
 
 
 ## How to reach me ? 

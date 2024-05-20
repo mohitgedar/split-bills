@@ -33,77 +33,74 @@
     <title>split-bills</title>
     <link rel="stylesheet" href="output.css">
 </head>
-<body style="min-width: 400px;" class=" p-0 bg-amber-50">
-    <header class="bg-sky-700 h-14 flex justify-center items-center"> <!--here we are using tailwind classes to change css , bg-sky-900 sets the background color of the header here , h-16 sets 4*16px height of the header , flex is used to make the header cotainer flexible , justify-centre is applied to flex to align child elements of header centrallly to the main axis here it is x-axis, and items-centre class put the child element cross axis centrally , remember align-centre will only align the  child elements to the centre if the parent is inline or inline block , and remember the childs should also be block or flex to appply intems-centre -->
-        <span class="text-yellow-50 text-3xl  font-semibold">Split In Friends</span><!--here text-white changes the text-color to white ,it can be other colors also , text-3xl is here used to set the font size of the text , there can be other values for it also like 4xl upto 9xl or sm for small or text-base for normal size , lg for large etc-->
+<body style="min-width: 400px;" class=" p-0 bg-slate-800 m-5  md:mx-36 lg:mx-40">
+    <header class="bg-cyan-500 font-serif h-14 flex justify-center items-center rounded-lg"> <!--here we are using tailwind classes to change css , bg-sky-900 sets the background color of the header here , h-16 sets 4*16px height of the header , flex is used to make the header cotainer flexible , justify-centre is applied to flex to align child elements of header centrallly to the main axis here it is x-axis, and items-centre class put the child element cross axis centrally , remember align-centre will only align the  child elements to the centre if the parent is inline or inline block , and remember the childs should also be block or flex to appply intems-centre -->
+        <span class="text-black text-3xl  font-normal">Split Bills ....</span><!--here text-white changes the text-color to white ,it can be other colors also , text-3xl is here used to set the font size of the text , there can be other values for it also like 4xl upto 9xl or sm for small or text-base for normal size , lg for large etc-->
     </header>   
-    <main class="my-10 bg-amber-50">
+    <main class="my-10 bg-slate-800">
 
 <!-- 1 form to take entry of how many friends there are -->
-        <div id="how-many-friends" class="px-4 flex items-center">
-            <p class="text-xl flex items-center">
+        <div id="how-many-friends" class="hover:bg-slate-500 rounded-xl px-4 flex items-center bg-slate-400 py-7">
+            <p class="text-xl font-semibold flex items-center">
                 <span class="font-extrabold text-4xl pr-1">&middot;</span>
             How many friends are there ? </p>
-            <input id="friends-number-input-field"  onkeyup="if(event.key==='Enter') noOfpeople();"class="ml-3 border-2 rounded
-                -lg  w-14 border-slate-300 h-8" type="number" max="20"></input> 
+            <input id="friends-number-input-field"  onkeyup="if(event.key==='Enter') noOfpeople();"class=" ml-3 border-2 rounded
+                -lg  w-16 border-slate-600 h-8 bg-slate-300 pl-2" placeholder="2-10" type="number" max="10" min="1"></input> 
         </div>
 
 
 <!-- 2 this is the second form where we try to add names -->
-        <div id="take-names-entry-div" class="hidden">
+        <div id="take-names-entry-div" class="hidden bg-slate-400 rounded-xl py-6">
 
             <div class="px-4 flex items-center" >
 
                 <p class="text-lg flex items-center">
                     <span class="font-extrabold text-4xl pr-1">&middot;</span>
                 Enter the name of friend 
-                    <span id="friendnumber" class="text-teal-500">1</span> 
+                    <span id="friendnumber" class=" font-bold">1</span> 
                 </p>
     
-                <input id="friends-inputed-name" onkeyup="if(event.key==='Enter') addnametolist();" class="ml-3 border-2 rounded
-                    -lg  w-32 border-slate-300 h-8 pl-1" type="text" maxlength="20" placeholder="Name">
+                <input id="friends-inputed-name" onkeyup="if(event.key==='Enter') addnametolist();" class="hover:border-black hover:bg-neutral-200 ml-3 border-2 rounded-lg border-white w-32 bg-lime-50 h-8 pl-2 bg-gray-200" type="text" maxlength="20" placeholder="Name">
                 </input> 
             </div>
 
 
-            <div class="flex justify-around mt-2" >
-                <button onclick="addnametolist();" class="w-auto min-w-32  border-2 font-bold bg-green-600 text-red-100 rounded-xl h-8">Ok</button>
-                <button onclick="resetallwhenaddnames();" class="w-auto min-w-32 border-2 font-bold bg-red-700 text-red-100 rounded-xl h-8">Reset All</button>
+            <div class="flex justify-around mt-5" >
+                <button onclick="addnametolist();" class="hover:bg-green-700 active:bg-green-500 w-auto min-w-32  border-2 font-bold bg-green-600 text-red-100 rounded-xl h-8">Ok</button>
+                <button onclick="resetallwhenaddnames();" class="hover:bg-red-800 active:bg-red-600 w-auto min-w-32 border-2 font-bold bg-red-700 text-red-100 rounded-xl h-8">Reset All</button>
             </div>
            
         </div>
 
 
 <!-- 3 div to render the added names on the page -->
-        <div id="added-names" class=" mx-5">
-            
-         
+        <div id="added-names" class="hidden mt-4 py-3 rounded-xl bg-gray-400 ">
             
         </div>
 
 <!-- 4 div to take entries of the payments and calculate final , or reset everthing-->
 
-        <div id="reset-all-after-all-name-added" class="hidden">
+        <div id="reset-all-after-all-name-added" class="hidden rounded-xl">
 
             <div class="flex flex-col" >
-                <div class=" flex justify-evenly">
-                    <button onclick="finalcalculation();" class="w-auto min-w-32 border-2 font-bold bg-teal-600 text-red-100 rounded-xl h-8">calculate</button>
-                    <button onclick="resetall();" class="w-auto min-w-32 border-2 font-bold bg-red-700 text-red-100 rounded-xl h-8">Reset All</button>
+                <div class=" flex justify-evenly py-6">
+                    <button onclick="finalcalculation();" class="w-auto min-w-32 border-2 font-bold bg-teal-600 hover:bg-teal-700 active:bg-teal-500 text-red-100 rounded-xl h-8">calculate</button>
+                    <button onclick="resetall();" class="hover:bg-red-800 active:bg-red-600 w-auto min-w-32 border-2 font-bold bg-red-700 text-red-100 rounded-xl h-8">Reset All</button>
                 </div>
-                <div class="flex justify-center my-4 mx-5">
+                <div class="flex justify-center py-5 rounded-t-xl -mb-1 bg-slate-400">
                     <label class="font-semibold text-lg" for="names">who paid ?</label>
                     <select class="ml-4 border-2 rounded-lg border-lime-700" name="names" id="drop-down-for-payee">
                         <!-- render the drop down options here  -->
                     </select>
                 </div>
-                <div class="flex justify-center mb-3 mx-5">
+                <div class="flex justify-center pb-4 border-b-2 bg-slate-400">
                     <label class="font-semibold text-lg" for="amountpaid">How much paid ?</label>
-                    <input id="amountpaid" class="border-2 ml-2 w-20 rounded-lg  border-lime-700 pl-1" type="number" name="amountpaid" maxlength="9" placeholder="Amount">
+                    <input id="amountpaid" min="0" class="border-2 ml-2 w-20 rounded-lg  border-lime-700 pl-1" type="number" name="amountpaid" maxlength="9" placeholder="Amount">
                 </div>
-                <div id="parent-checkbox-div" class=" mx-5">
-                    <div id="selectalldiv" class="flex items-center my-2">
-                        <label class="text-lg" for="selectall">select all</label>
-                        <input id="selectallcheckbox" class="h-5 w-5 ml-3 " type="checkbox">
+                <div id="parent-checkbox-div" class="rounded-b-xl py-4 bg-slate-400">
+                    <div id="selectalldiv" class="flex items-center my-2 pl-3">
+                        <label class="text-lg " for="selectall">Select All</label>
+                        <input id="selectallcheckbox" class=" h-5 w-5 ml-3 " type="checkbox">
                     </div>
                     
                     
@@ -112,10 +109,10 @@
                 </div>
 
                 <div class="m-5 flex justify-center">
-                    <button onclick="makeentry();" class="w-auto min-w-32 border-2 font-bold bg-green-600 text-red-100 rounded-xl h-8">Make Entry</button>
+                    <button onclick="makeentry();" class=" hover:bg-green-700 active:bg-green-500 w-auto min-w-32 border-2 font-bold bg-green-600 text-red-100 rounded-xl h-8">Make Entry</button>
                 </div>
                 
-                <div class="mx-5" id="final-calculated-result">
+                <div class=" bg-slate-400 p-5 rounded-lg hidden" id="final-calculated-result">
                     
                     <!-- here goes the final result after the calculate button is pressed -->
                 </div>
